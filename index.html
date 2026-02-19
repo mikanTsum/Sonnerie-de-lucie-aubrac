@@ -11,12 +11,29 @@
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { getFirestore, collection, addDoc, getDocs } 
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged }
+ from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+const auth = getAuth();
+const provider = new GoogleAuthProvider();
+
+let currentUser = null;
+
+onAuthStateChanged(auth, (user) => {
+  currentUser = user;
+  displayAnswers();
+});
+
+ import { deleteDoc, doc }
+ from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyAYGY37Hd7R3Jbd9BRsOMb8cw6Vpeb4d8Q",
     authDomain:  "sonnerie-lycee.firebaseapp.com",
     projectId: "sonnerie-lycee",
   };
+  document.getElementById("loginBtn").addEventListener("click", async () => {
+   await signInWithPopup(auth, provider);
+  });
 
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
@@ -46,11 +63,37 @@
     }
   });
 
-  displayAnswers();
+  async function displayAnswers() {
+  results.innerHTML = "";
+  const querySnapshot = await getDocs(collection(db, "propositions"));
+
+  querySnapshot.forEach((document) => {
+    const li = document.createElement("li");
+    li.textContent = document.data().text;
+
+    // ⚠️ Remplace par TON email Google
+    if (currentUser && currentUser.email === "kikichelle2.0@gmail.com") {
+      const deleteBtn = document.createElement("button");
+      deleteBtn.textContent = "❌";
+      deleteBtn.style.marginLeft = "10px";
+
+      deleteBtn.addEventListener("click", async () => {
+        await deleteDoc(doc(db, "propositions", document.id));
+        displayAnswers();
+      });
+
+      li.appendChild(deleteBtn);
+    }
+
+    results.appendChild(li);
+  });
+}
+
 </script>
 
  
 <h1>Propositions de sonneries pour le lycée Lucie Aubrac</h1>
+<button id="loginBtn">Se connecter (admin)</button>
 
 <form id="answerForm">
     <input type="text" id="answerInput" 
@@ -92,6 +135,7 @@
 
 </body>
 </html>
+
 
 
 
