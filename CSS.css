@@ -18,7 +18,7 @@ input {
 button {
     padding: 8px;
     background: rgb(232, 236, 154);
-    color: #06578d;
+    color: #2596be;
     border: none;
 }
 
@@ -45,4 +45,5 @@ li {
 #loginBtn {
   display: inline-block;
 }
+
 
