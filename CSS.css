@@ -1,0 +1,43 @@
+CSS
+body{
+    background-color:#06578d
+
+}
+
+h1 {
+    text-align: center;
+    color: dimgray;
+    font-family: fantasy ;
+    font-size: larger;
+}
+input {
+    padding: 8px;
+    width: 200px;
+}
+
+button {
+    padding: 8px;
+    background: rgb(232, 236, 154);
+    color: white;
+    border: none;
+}
+
+.results {
+    margin-top: 30px;
+    padding: 10px;
+    background: white;
+    border: 1px solid #ccc;
+}
+
+ul {
+    margin-top: 20px;
+    padding: 0;
+}
+
+li {
+    list-style: none;
+    background: white;
+    margin: 5px 0;
+    padding: 8px;
+    border: 1px solid #ccc;
+}

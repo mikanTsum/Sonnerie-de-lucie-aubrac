@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang='fr'>
+<head>
+<meta charset='UTF-8'>
+<title>sonnerie.lucie.aubrac</title>
+<link rel="stylesheet" href="CSS.css">
+</head>
+<body>
+
+<h1>Propositions de sonneries pour le lycée Lucie Aubrac</h1>
+
+<form id="answerForm">
+    <input type="text" id="answerInput" 
+           placeholder="ex: Bring me to life de Evanescence" required>
+    <button type="submit">Submit</button>
+</form>
+
+<ul id="results"></ul>
+
+<script>
+    const form = document.getElementById("answerForm");
+    const input = document.getElementById("answerInput");
+    const results = document.getElementById("results");
+
+    let answers = JSON.parse(localStorage.getItem("pollAnswers")) || [];
+
+    function displayAnswers() {
+        results.innerHTML = "";
+        answers.forEach(answer => {
+            let li = document.createElement("li");
+            li.textContent = answer;
+            results.appendChild(li);
+        });
+    }
+
+    form.addEventListener("submit", function(e) {
+        e.preventDefault();
+
+        if (input.value.trim() !== "") {
+            answers.push(input.value);
+            localStorage.setItem("pollAnswers", JSON.stringify(answers));
+            input.value = "";
+            displayAnswers();
+        }
+    });
+
+    displayAnswers();
+</script>
+
+</body>
+</html>
+
