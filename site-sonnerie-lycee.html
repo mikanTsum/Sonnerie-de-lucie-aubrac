@@ -6,7 +6,50 @@
 <link rel="stylesheet" href="CSS.css">
 </head>
 <body>
+<script type="module">
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getFirestore, collection, addDoc, getDocs } 
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
+  const firebaseConfig = {
+    apiKey: "AIzaSyAYGY37Hd7R3Jbd9BRsOMb8cw6Vpeb4d8Q",
+    authDomain:  "sonnerie-lycee.firebaseapp.com",
+    projectId: "sonnerie-lycee",
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  const form = document.getElementById("answerForm");
+  const input = document.getElementById("answerInput");
+  const results = document.getElementById("results");
+
+  async function displayAnswers() {
+    results.innerHTML = "";
+    const querySnapshot = await getDocs(collection(db, "propositions"));
+    querySnapshot.forEach((doc) => {
+      const li = document.createElement("li");
+      li.textContent = doc.data().text;
+      results.appendChild(li);
+    });
+  }
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (input.value.trim() !== "") {
+      await addDoc(collection(db, "propositions"), {
+        text: input.value
+      });
+      input.value = "";
+      displayAnswers();
+    }
+  });
+
+  displayAnswers();
+</script>
+
+ 
 <h1>Propositions de sonneries pour le lycée Lucie Aubrac</h1>
 
 <form id="answerForm">
@@ -49,5 +92,6 @@
 
 </body>
 </html>
+
 
 
