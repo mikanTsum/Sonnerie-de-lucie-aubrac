@@ -8,11 +8,17 @@
 <body>
 <script type="module">
 <script type="module">
+  const loginBtn = document.getElementById("loginBtn");
+
+  loginBtn.addEventListener("click", async () => {
+ await signInWithPopup(auth, provider);
+  });
+
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { getFirestore, collection, addDoc, getDocs } 
-  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
   import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged }
- from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 const auth = getAuth();
 const provider = new GoogleAuthProvider();
 
@@ -135,6 +141,7 @@ onAuthStateChanged(auth, (user) => {
 
 </body>
 </html>
+
 
 
 
