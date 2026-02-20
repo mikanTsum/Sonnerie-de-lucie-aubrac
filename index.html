@@ -26,16 +26,16 @@
 <ul id="results"></ul>
 
 <script type="module">
-let isAdmin = false;
-
-const ADMIN_USERNAME = "lucieA";
-const ADMIN_PASSWORD = "Lucie2026";
-
-let isAdmin = false;
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } 
 from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
+// 🔐 ADMIN CONFIG
+let isAdmin = false;
+const ADMIN_USERNAME = "lucieA";
+const ADMIN_PASSWORD = "Lucie2026";
+
+// 🔥 Firebase Config
 const firebaseConfig = {
   apiKey: "AIzaSyAYGY37Hd7R3Jbd9BRsOMb8cw6Vpeb4d8Q",
   authDomain: "sonnerie-lycee.firebaseapp.com",
@@ -44,29 +44,47 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+
+// 📌 DOM Elements
 const adminLoginBtn = document.getElementById("adminLoginBtn");
 const logoutBtn = document.getElementById("logoutBtn");
 const usernameInput = document.getElementById("adminUsername");
 const passwordInput = document.getElementById("adminPassword");
 
-
-
-let currentUser = null;
-
-const loginBtn = document.getElementById("loginBtn");
 const form = document.getElementById("answerForm");
 const input = document.getElementById("answerInput");
 const results = document.getElementById("results");
 
-loginBtn.addEventListener("click", async () => {
-  await signInWithPopup(auth, provider);
+// 🟢 LOGIN
+adminLoginBtn.addEventListener("click", () => {
+  const username = usernameInput.value;
+  const password = passwordInput.value;
+
+  if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
+    isAdmin = true;
+    alert("Connexion réussie ✅");
+
+    document.getElementById("adminLogin").style.display = "none";
+    logoutBtn.style.display = "inline-block";
+
+    displayAnswers();
+  } else {
+    alert("Identifiants incorrects ❌");
+  }
 });
 
-onAuthStateChanged(auth, (user) => {
-  currentUser = user;
+// 🔴 LOGOUT
+logoutBtn.addEventListener("click", () => {
+  isAdmin = false;
+  alert("Déconnecté");
+
+  logoutBtn.style.display = "none";
+  document.getElementById("adminLogin").style.display = "block";
+
   displayAnswers();
 });
 
+// 📋 DISPLAY ANSWERS
 async function displayAnswers() {
   results.innerHTML = "";
   const querySnapshot = await getDocs(collection(db, "propositions"));
@@ -75,21 +93,15 @@ async function displayAnswers() {
     const li = document.createElement("li");
     li.textContent = docu.data().text;
 
-   if (isAdmin)
+    if (isAdmin) {
       const deleteBtn = document.createElement("button");
       deleteBtn.textContent = "❌";
       deleteBtn.style.marginLeft = "10px";
-     deleteBtn.addEventListener("click", async () => {
-      const password = prompt("Mot de passe admin :");
 
-     if (password === "monMotDePasseSecret") {
-      await deleteDoc(doc(db, "propositions", docu.id));
-      displayAnswers();
-     } else {
-    alert("Mot de passe incorrect !");
-     }
-  });
-
+      deleteBtn.addEventListener("click", async () => {
+        await deleteDoc(doc(db, "propositions", docu.id));
+        displayAnswers();
+      });
 
       li.appendChild(deleteBtn);
     }
@@ -98,8 +110,10 @@ async function displayAnswers() {
   });
 }
 
+// ➕ ADD NEW PROPOSITION
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
+
   if (input.value.trim() !== "") {
     await addDoc(collection(db, "propositions"), { text: input.value });
     input.value = "";
@@ -107,12 +121,14 @@ form.addEventListener("submit", async (e) => {
   }
 });
 
+// Initial load
 displayAnswers();
 
 </script>
 
 </body>
 </html>
+
 
 
 
