@@ -9,7 +9,14 @@
 
 <h1>Propositions de sonneries pour le lycée Lucie Aubrac</h1>
 
-<button id="loginBtn">Se connecter (admin)</button>
+<div id="adminLogin">
+  <h3>Connexion Admin</h3>
+  <input type="text" id="adminUsername" placeholder="Nom d'utilisateur">
+  <input type="password" id="adminPassword" placeholder="Mot de passe">
+  <button id="adminLoginBtn">Se connecter</button>
+  <button id="logoutBtn" style="display:none;">Se déconnecter</button>
+</div>
+
 
 <form id="answerForm">
     <input type="text" id="answerInput" placeholder="ex: Teeth, Lady Gaga" required>
@@ -19,12 +26,15 @@
 <ul id="results"></ul>
 
 <script type="module">
+let isAdmin = false;
 
+const ADMIN_USERNAME = "lucieA";
+const ADMIN_PASSWORD = "Lucie2026";
+
+let isAdmin = false;
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } 
 from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged }
-from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAYGY37Hd7R3Jbd9BRsOMb8cw6Vpeb4d8Q",
@@ -34,8 +44,12 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-const auth = getAuth();
-const provider = new GoogleAuthProvider();
+const adminLoginBtn = document.getElementById("adminLoginBtn");
+const logoutBtn = document.getElementById("logoutBtn");
+const usernameInput = document.getElementById("adminUsername");
+const passwordInput = document.getElementById("adminPassword");
+
+
 
 let currentUser = null;
 
@@ -61,21 +75,20 @@ async function displayAnswers() {
     const li = document.createElement("li");
     li.textContent = docu.data().text;
 
-    if (currentUser && currentUser.email === "kikichelle2.0@gmail.com") {
+   if (isAdmin)
       const deleteBtn = document.createElement("button");
       deleteBtn.textContent = "❌";
       deleteBtn.style.marginLeft = "10px";
+     deleteBtn.addEventListener("click", async () => {
+      const password = prompt("Mot de passe admin :");
 
-      deleteBtn.addEventListener("click", async () => {
-  const password = prompt("Mot de passe admin :");
-
-  if (password === "Mikan06122009") {
-    await deleteDoc(doc(db, "propositions", docu.id));
-    displayAnswers();
-  } else {
+     if (password === "monMotDePasseSecret") {
+      await deleteDoc(doc(db, "propositions", docu.id));
+      displayAnswers();
+     } else {
     alert("Mot de passe incorrect !");
-  }
-});
+     }
+  });
 
 
       li.appendChild(deleteBtn);
@@ -100,5 +113,6 @@ displayAnswers();
 
 </body>
 </html>
+
 
 
