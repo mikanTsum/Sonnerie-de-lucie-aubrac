@@ -67,9 +67,16 @@ async function displayAnswers() {
       deleteBtn.style.marginLeft = "10px";
 
       deleteBtn.addEventListener("click", async () => {
-        await deleteDoc(doc(db, "propositions", docu.id));
-        displayAnswers();
-      });
+  const password = prompt("Mot de passe admin :");
+
+  if (password === "Mikan06122009") {
+    await deleteDoc(doc(db, "propositions", docu.id));
+    displayAnswers();
+  } else {
+    alert("Mot de passe incorrect !");
+  }
+});
+
 
       li.appendChild(deleteBtn);
     }
@@ -93,4 +100,5 @@ displayAnswers();
 
 </body>
 </html>
+
 
