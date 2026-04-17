@@ -9,15 +9,6 @@
 
 <h1>Propositions de sonneries pour le lycée Lucie Aubrac</h1>
 
-<div id="adminLogin">
-  <h3>Connexion Admin</h3>
-  <input type="text" id="adminUsername" placeholder="Nom d'utilisateur">
-  <input type="password" id="adminPassword" placeholder="Mot de passe">
-  <button id="adminLoginBtn">Se connecter</button>
-  <button id="logoutBtn" style="display:none;">Se déconnecter</button>
-</div>
-
-
 <form id="answerForm">
     <input type="text" id="answerInput" placeholder="ex: Teeth, Lady Gaga" required>
     <button type="submit">Envoyer</button>
@@ -33,86 +24,6 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 
-export default function WheelApp() {
-  const [songs, setSongs] = useState([
-    "Teeth - Lady Gaga",
-    "Blinding Lights - The Weeknd",
-    "Bad Guy - Billie Eilish",
-    "Shape of You - Ed Sheeran"
-  ]);
-
-  const [rotation, setRotation] = useState(0);
-  const [selected, setSelected] = useState(null);
-
-  const spinWheel = () => {
-    const randomIndex = Math.floor(Math.random() * songs.length);
-    const anglePerItem = 360 / songs.length;
-
-    const extraSpins = 360 * 5;
-    const targetAngle = 360 - randomIndex * anglePerItem;
-
-    const newRotation = rotation + extraSpins + targetAngle;
-
-    setRotation(newRotation);
-
-    setTimeout(() => {
-      setSelected(songs[randomIndex]);
-    }, 2000);
-  };
-
-  return (
-    <div className="flex flex-col items-center gap-6 p-6">
-      <h1 className="text-2xl font-bold">🎡 Roue des musiques</h1>
-
-      <div className="relative">
-        {/* Arrow */}
-        <div className="absolute top-[-10px] left-1/2 -translate-x-1/2 text-2xl">
-          ▼
-        </div>
-
-        {/* Wheel */}
-        <motion.div
-          animate={{ rotate: rotation }}
-          transition={{ duration: 2, ease: "easeOut" }}
-          className="w-72 h-72 rounded-full border-4 border-black relative overflow-hidden"
-        >
-          {songs.map((song, i) => {
-            const angle = (360 / songs.length) * i;
-            return (
-              <div
-                key={i}
-                className="absolute w-1/2 h-1/2 origin-bottom-right flex items-center justify-center text-xs text-center"
-                style={{
-                  transform: `rotate(${angle}deg) skewY(-${90 - 360 / songs.length}deg)`,
-                  background: i % 2 === 0 ? "#facc15" : "#60a5fa"
-                }}
-              >
-                <span
-                  className="transform rotate-45"
-                  style={{ transform: `skewY(${90 - 360 / songs.length}deg) rotate(45deg)` }}
-                >
-                  {song}
-                </span>
-              </div>
-            );
-          })}
-        </motion.div>
-      </div>
-
-      <Button onClick={spinWheel}>🎲 Lancer</Button>
-
-      {selected && (
-        <div className="text-xl font-semibold">🎵 {selected}</div>
-      )}
-    </div>
-  );
-}
-// 🔐 ADMIN CONFIG
-let isAdmin = false;
-const ADMIN_USERNAME = "lucieA";
-const ADMIN_PASSWORD = "Lucie2026";
-
-// 🔥 Firebase Config
 const firebaseConfig = {
   apiKey: "AIzaSyAYGY37Hd7R3Jbd9BRsOMb8cw6Vpeb4d8Q",
   authDomain: "sonnerie-lycee.firebaseapp.com",
@@ -122,47 +33,10 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// 📌 DOM Elements
-const adminLoginBtn = document.getElementById("adminLoginBtn");
-const logoutBtn = document.getElementById("logoutBtn");
-const usernameInput = document.getElementById("adminUsername");
-const passwordInput = document.getElementById("adminPassword");
 
 const form = document.getElementById("answerForm");
 const input = document.getElementById("answerInput");
 const results = document.getElementById("results");
-
-// 🟢 LOGIN
-adminLoginBtn.addEventListener("click", () => {
-  const username = usernameInput.value;
-  const password = passwordInput.value;
-
-  if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
-    isAdmin = true;
-    alert("Connexion réussie ✅");
-
-    document.getElementById("adminLogin").style.display = "none";
-    logoutBtn.style.display = "inline-block";
-
-    displayAnswers();
-  } else {
-    alert("Identifiants incorrects ❌");
-  }
-});
-
-// 🔴 LOGOUT
-logoutBtn.addEventListener("click", () => {
-  isAdmin = false;
-  alert("Déconnecté");
-
-  logoutBtn.style.display = "none";
-  document.getElementById("adminLogin").style.display = "block";
-
-  displayAnswers();
-});
-
-// 📋 DISPLAY ANSWERS
-async function displayAnswers() {
   results.innerHTML = "";
   const querySnapshot = await getDocs(collection(db, "propositions"));
 
@@ -192,7 +66,6 @@ async function displayAnswers() {
   });
 }
 
-// ➕ ADD NEW PROPOSITION
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
@@ -203,7 +76,6 @@ form.addEventListener("submit", async (e) => {
   }
 });
 
-// Initial load
 displayAnswers();
 
 </script>
