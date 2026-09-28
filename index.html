@@ -1,84 +1,125 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<title>sonnerie.lucie.aubrac</title>
-<link rel="stylesheet" href="CSS.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sonneries - Lycée Lucie Aubrac</title>
+    <link rel="stylesheet" href="CSS.css">
 </head>
+
 <body>
 
-<h1>Propositions de sonneries pour le lycée Lucie Aubrac</h1>
+    <h1>Propositions de sonneries pour le lycée Lucie Aubrac</h1>
 
-<form id="answerForm">
-    <input type="text" id="answerInput" placeholder="ex: Teeth, Lady Gaga" required>
-    <button type="submit">Envoyer</button>
-</form>
+    <form id="answerForm">
+        <input
+            type="text"
+            id="answerInput"
+            placeholder="Ex : Teeth, Lady Gaga"
+            required
+        >
+        <button type="submit">Envoyer</button>
+    </form>
 
-<ul id="results"></ul>
+    <ul id="results"></ul>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } 
-from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-import { useState } from "react";
-import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+        import {
+            getFirestore,
+            collection,
+            addDoc,
+            getDocs,
+            deleteDoc,
+            doc
+        } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyAYGY37Hd7R3Jbd9BRsOMb8cw6Vpeb4d8Q",
-  authDomain: "sonnerie-lycee.firebaseapp.com",
-  projectId: "sonnerie-lycee",
-};
+        const firebaseConfig = {
+            apiKey: "AIzaSyAYGY37Hd7R3Jbd9BRsOMb8cw6Vpeb4d8Q",
+            authDomain: "sonnerie-lycee.firebaseapp.com",
+            projectId: "sonnerie-lycee"
+        };
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
 
+        const form = document.getElementById("answerForm");
+        const input = document.getElementById("answerInput");
+        const results = document.getElementById("results");
 
-const form = document.getElementById("answerForm");
-const input = document.getElementById("answerInput");
-const results = document.getElementById("results");
-  results.innerHTML = "";
-  const querySnapshot = await getDocs(collection(db, "propositions"));
+        // Pour l'instant, pas de mode administrateur.
+        const isAdmin = false;
 
-  querySnapshot.forEach((docu) => {
-    const li = document.createElement("li");
-    li.textContent = docu.data().text;
+        async function displayAnswers() {
+            results.innerHTML = "";
 
-    if (isAdmin) {
-      const deleteBtn = document.createElement("button");
-      deleteBtn.textContent = "❌";
-      deleteBtn.style.marginLeft = "10px";
+            try {
+                const querySnapshot = await getDocs(
+                    collection(db, "propositions")
+                );
 
-      deleteBtn.addEventListener("click", async () => {
-        try {
-            await deleteDoc(doc(db, "propositions", docu.id));
-  displayAnswers();
-} catch (error) {
-  console.error("Delete error:", error);
-  alert("Erreur suppression");
-}
-      });
+                querySnapshot.forEach((docu) => {
+                    const li = document.createElement("li");
 
-      li.appendChild(deleteBtn);
-    }
+                    li.textContent = docu.data().text;
 
-    results.appendChild(li);
-  });
-}
+                    if (isAdmin) {
+                        const deleteBtn = document.createElement("button");
 
-form.addEventListener("submit", async (e) => {
-  e.preventDefault();
+                        deleteBtn.textContent = "❌";
+                        deleteBtn.style.marginLeft = "10px";
 
-  if (input.value.trim() !== "") {
-    await addDoc(collection(db, "propositions"), { text: input.value });
-    input.value = "";
-    displayAnswers();
-  }
-});
+                        deleteBtn.addEventListener("click", async () => {
+                            try {
+                                await deleteDoc(
+                                    doc(db, "propositions", docu.id)
+                                );
 
-displayAnswers();
+                                displayAnswers();
+                            } catch (error) {
+                                console.error("Erreur suppression :", error);
+                                alert("Erreur lors de la suppression.");
+                            }
+                        });
 
-</script>
+                        li.appendChild(deleteBtn);
+                    }
+
+                    results.appendChild(li);
+                });
+
+            } catch (error) {
+                console.error("Erreur chargement :", error);
+                results.innerHTML =
+                    "<li>Impossible de charger les propositions.</li>";
+            }
+        }
+
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const text = input.value.trim();
+
+            if (text === "") {
+                return;
+            }
+
+            try {
+                await addDoc(collection(db, "propositions"), {
+                    text: text
+                });
+
+                input.value = "";
+                displayAnswers();
+
+            } catch (error) {
+                console.error("Erreur ajout :", error);
+                alert("Impossible d'ajouter la proposition.");
+            }
+        });
+
+        displayAnswers();
+    </script>
 
 </body>
 </html>
